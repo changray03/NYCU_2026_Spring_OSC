@@ -56,42 +56,44 @@ void start_kernel(){
         // Dealing with command
         if(cmd_cmp(cmd, "help")){
             uart_puts("Available commands:\n");
-            uart_puts("\thelp - Show all commands\n");
-            uart_puts("\thello - Print Hello, World!\n");
+            uart_puts("\thelp - show all commands\n");
+            uart_puts("\thello - print Hello, World!\n");
+            uart_puts("\tinfo - print system info\n");
         }
         else if(cmd_cmp(cmd, "hello")){
             uart_puts("Hello, World!\n");
         }
         else if(cmd_cmp(cmd, "info")){
+            uart_puts("System information:\n");
             struct sbiret spec_version = sbi_get_spec_version();
             struct sbiret impl_id = sbi_get_impl_id();
             struct sbiret impl_version = sbi_get_impl_version();
-
+            
             if(spec_version.error == 0){
-                uart_puts("SBI Spec Version: ");
+                uart_puts("\tSBI Spec Version: ");
                 uart_hex(spec_version.value);
                 uart_putc('\n');
             }
             else{
-                uart_puts("Failed to get SBI Spec Version\n");
+                uart_puts("\tFailed to get SBI Spec Version\n");
             }
 
             if(impl_id.error == 0){
-                uart_puts("SBI Impl ID: ");
+                uart_puts("\tSBI Impl ID: ");
                 uart_hex(impl_id.value);
                 uart_putc('\n');
             }
             else{
-                uart_puts("Failed to get SBI Impl ID\n");
+                uart_puts("\tFailed to get SBI Impl ID\n");
             }
 
             if(impl_version.error == 0){
-                uart_puts("SBI Impl Version: ");
+                uart_puts("\tSBI Impl Version: ");
                 uart_hex(impl_version.value);
                 uart_putc('\n');
             }
             else{
-                uart_puts("Failed to get SBI Impl Version\n");
+                uart_puts("\tFailed to get SBI Impl Version\n");
             }
         }
         else{
