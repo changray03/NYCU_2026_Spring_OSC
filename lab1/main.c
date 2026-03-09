@@ -3,6 +3,14 @@ extern void uart_putc(char c);
 extern void uart_hex(unsigned long h);
 extern char uart_getc();
 
+extern struct sbiret sbi_get_spec_version();
+extern struct sbiret sbi_get_impl_id();
+extern struct sbiret sbi_get_impl_version();
+struct sbiret {
+	long error;
+	long value;
+};
+
 #define prompt_size 128
 
 _Bool cmd_cmp(const char* cmd, const char* target){
@@ -29,26 +37,62 @@ void start_kernel(){
                 cmd[i] = '\0';
                 break;
             }
-            else if((c == '\b' || c == 127) && i > 0){
-                uart_putc('\b');
-                uart_putc(' ');
-                uart_putc('\b');
-                i--;
+            else if(c == '\b' || c == 127){
+                if(i > 0){
+                    uart_putc('\b');
+                    uart_putc(' ');
+                    uart_putc('\b');
+                    i--;
+                }
             }
-            else if(i < prompt_size - 1){
-                uart_putc(c);
-                cmd[i++] = c;
+            else{
+                if(i < prompt_size - 1){
+                    uart_putc(c);
+                    cmd[i++] = c;
+                }
             }
         }
 
         // Dealing with command
         if(cmd_cmp(cmd, "help")){
             uart_puts("Available commands:\n");
-            uart_puts("help - Show all commands\n");
-            uart_puts("hello - Print Hello, World!\n");
+            uart_puts("\thelp - Show all commands\n");
+            uart_puts("\thello - Print Hello, World!\n");
         }
         else if(cmd_cmp(cmd, "hello")){
             uart_puts("Hello, World!\n");
+        }
+        else if(cmd_cmp(cmd, "info")){
+            struct sbiret spec_version = sbi_get_spec_version();
+            struct sbiret impl_id = sbi_get_impl_id();
+            struct sbiret impl_version = sbi_get_impl_version();
+
+            if(spec_version.error == 0){
+                uart_puts("SBI Spec Version: ");
+                uart_hex(spec_version.value);
+                uart_putc('\n');
+            }
+            else{
+                uart_puts("Failed to get SBI Spec Version\n");
+            }
+
+            if(impl_id.error == 0){
+                uart_puts("SBI Impl ID: ");
+                uart_hex(impl_id.value);
+                uart_putc('\n');
+            }
+            else{
+                uart_puts("Failed to get SBI Impl ID\n");
+            }
+
+            if(impl_version.error == 0){
+                uart_puts("SBI Impl Version: ");
+                uart_hex(impl_version.value);
+                uart_putc('\n');
+            }
+            else{
+                uart_puts("Failed to get SBI Impl Version\n");
+            }
         }
         else{
             if(i == 0){
