@@ -32,6 +32,11 @@ void start_kernel(){
         // Dealing with input
         while(1){
             char c = uart_getc();
+            if(c == 0x1B){
+                uart_getc();
+                uart_getc();
+                continue;
+            }
             if(c == '\r' || c == '\n'){
                 uart_putc('\n');
                 cmd[i] = '\0';
@@ -46,7 +51,7 @@ void start_kernel(){
                 }
             }
             else{
-                if(i < prompt_size - 1){
+                if(i < prompt_size - 1 && c >= 32 && c <= 126){
                     uart_putc(c);
                     cmd[i++] = c;
                 }

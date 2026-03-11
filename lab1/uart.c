@@ -1,7 +1,17 @@
-#define UART_BASE 0xD4017000UL
+#ifdef DEBUG
+    #define UART_BASE 0x10000000UL
+#else
+    #define UART_BASE 0xD4017000UL
+#endif
+
 #define UART_RBR  (unsigned char*)(UART_BASE + 0x0)
 #define UART_THR  (unsigned char*)(UART_BASE + 0x0)
-#define UART_LSR  (unsigned char*)(UART_BASE + 0x14)
+#ifdef DEBUG
+    #define UART_LSR  ( unsigned char*)(UART_BASE + 0x5)
+#else
+    #define UART_LSR  (unsigned char*)(UART_BASE + 0x14)
+#endif
+
 #define LSR_DR    (1 << 0)
 #define LSR_TDRQ  (1 << 5)
 

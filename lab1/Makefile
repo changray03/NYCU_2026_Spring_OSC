@@ -6,13 +6,21 @@ CFLAGS = -mcmodel=medany -ffreestanding -nostdlib -g -Wall
 QEMU ?= qemu-system-riscv64
 TARGET = kernel
 
-build: clean
+test: clean
+	$(CC) $(CFLAGS) -c *.S *.c -DDEBUG
+	$(LD) -T link.ld -o $(TARGET).elf *.o
+	$(OBJCOPY) -O binary $(TARGET).elf $(TARGET).bin
+
+build: 
 	$(CC) $(CFLAGS) -c *.S *.c
 	$(LD) -T link.ld -o $(TARGET).elf *.o
 	$(OBJCOPY) -O binary $(TARGET).elf $(TARGET).bin
 
-run: build $(TARGET).bin
+run: test $(TARGET).bin
 	$(QEMU) -M virt -m 256M -kernel $(TARGET).bin -display none -serial stdio
+
+debug: test $(TARGET).bin
+	qemu-system-riscv64 -M virt -kernel kernel.bin -display none -serial stdio -S -s
 
 clean:
 	rm -f $(TARGET) $(TARGET).elf *.o
