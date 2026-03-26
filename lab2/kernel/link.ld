@@ -1,13 +1,13 @@
 OUTPUT_ARCH(riscv)
-ENTRY(_start)   /* Set the entry point of kernel*/
+ENTRY(_start)
 SECTIONS
 {
     . = KERNEL_START;
     _start = .;
-    .text : ALIGN(16) { *(.text.boot) *(.text) }
-    .rodata : ALIGN(16) { *(.rodata) }
-    .data : ALIGN(16) { *(.data) }
-    .bss : ALIGN(16) {
+    .text : { *(.text.boot) *(.text) }
+    .rodata : { *(.rodata) }
+    .data : { *(.data) }
+    .bss : {
         __bss_start = .;
         *(.sbss) *(.bss)
         __bss_stop = .;

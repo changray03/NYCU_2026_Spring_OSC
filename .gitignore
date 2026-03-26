@@ -1,6 +1,9 @@
-*.o
-*.elf
-/ex
-*.fit
-*.dtb
+lab0/
+ex/
 *.bin
+*.elf
+*.fit
+*.o
+*.dtb
+*.dts
+.vscode

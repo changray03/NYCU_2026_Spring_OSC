@@ -8,12 +8,12 @@ TARGET = kernel
 
 test: clean
 	$(CC) $(CFLAGS) -c *.S *.c -DDEBUG
-	$(LD) -T link.ld -o $(TARGET).elf *.o
+	$(LD) -T link.ld --defsym KERNEL_START=0x80200000 -o $(TARGET).elf *.o
 	$(OBJCOPY) -O binary $(TARGET).elf $(TARGET).bin
 
-build: 
+build: clean
 	$(CC) $(CFLAGS) -c *.S *.c
-	$(LD) -T link.ld -o $(TARGET).elf *.o
+	$(LD) -T link.ld --defsym KERNEL_START=0x20000000 -o $(TARGET).elf *.o
 	$(OBJCOPY) -O binary $(TARGET).elf $(TARGET).bin
 
 run: test $(TARGET).bin

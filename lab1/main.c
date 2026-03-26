@@ -23,7 +23,13 @@ _Bool cmd_cmp(const char* cmd, const char* target){
     return cmd[i] == '\0' && target[i] == '\0';
 }
 
+extern char _start[];
+
 void start_kernel(){
+    uart_puts("Kernel actual address: ");
+    uart_hex((unsigned long)_start);
+    uart_putc('\n');
+    uart_putc('\n');
     while(1){
         uart_puts("opi-rv2> ");
         char cmd[prompt_size];
