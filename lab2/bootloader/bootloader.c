@@ -1,8 +1,11 @@
 extern char uart_getc();
 extern char uart_getc_raw();
 extern void uart_puts(const char* s);
+extern void uart_putc(char c);
 extern void uart_decimal(unsigned long d);
 extern void uart_hex(unsigned long h);
+#define CHUNK_SIZE 512
+#define ASCII_ACK  'G'
 
 #ifdef DEBUG
     #define KERNEL_BASE 0x82000000UL
@@ -32,7 +35,14 @@ void uart_bootloader(unsigned long hartid, unsigned long fdt) {
     char* kernel_ptr = (char*)KERNEL_BASE;
     for (unsigned int i = 0; i < kernel_size; i++) {
         kernel_ptr[i] = uart_getc_raw();
+
+        // --- 握手核心邏輯 ---
+        // 每收滿 512 Bytes，或是收到了最後一個 Byte
+        if (((i + 1) % CHUNK_SIZE == 0)) {
+            uart_putc(ASCII_ACK); 
+        }
     }
+    uart_getc();
     uart_puts("Kernel loaded. Jumping...\n");
     uart_puts("Kernel address: ");
     void (*kernel_entry)(unsigned long, unsigned long) = (void (*)(unsigned long, unsigned long))KERNEL_BASE;

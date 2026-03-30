@@ -38,7 +38,7 @@ int strncmp(const char *s1, const char *s2, size_t n) {
 void shell(void *cpio_base) {
     char buf[128];
 
-    uart_puts("Welcome to OSC Shell!\n");
+    uart_puts("Welcome to OSC Shell!\n\n\n");
 
     while (1) {
         uart_puts("# ");
@@ -86,6 +86,7 @@ void shell(void *cpio_base) {
 }
 
 void start_kernel(uint64_t hartid,  uint64_t fdt) {
+    /*
     #ifdef DEBUG
         UART_BASE = 0x10000000;
     #else
@@ -95,7 +96,7 @@ void start_kernel(uint64_t hartid,  uint64_t fdt) {
     uint64_t uart_detect_base = 0;
     uart_puts("\n----------Kernel Running----------\n");
     uart_puts("\n");
-    
+    */
     // QEMU 模擬器路徑通常為 /soc/uart，Orange Pi RV2 為 /soc/serial
     int offset = offset = fdt_path_offset((void *)fdt, "/soc/serial");
     if (offset < 0) {
@@ -110,10 +111,10 @@ void start_kernel(uint64_t hartid,  uint64_t fdt) {
             uint64_t addr_h = fdt32_to_cpu(&reg[0]);
             uint64_t addr_l = fdt32_to_cpu(&reg[1]);
             
-            uart_detect_base = (addr_h << 32) | addr_l;
+            UART_BASE = (addr_h << 32) | addr_l;
 
             uart_puts("Found UART base from Devicetree: ");
-            uart_hex(uart_detect_base);
+            uart_hex(UART_BASE);
             uart_puts("\n");
         } else {
             uart_puts("Error: 'reg' property not found.\n");
