@@ -4,7 +4,7 @@ import time
 
 path = sys.argv[1]
 
-with open('kernel/kernel.bin', 'rb') as f:
+with open('kernel.bin', 'rb') as f:
     kernel_data = f.read()
 
 header = struct.pack('<II', 0x544F4F42, len(kernel_data))

@@ -7,3 +7,5 @@ ex/
 *.dtb
 *.dts
 .vscode
+*.cpio
+build

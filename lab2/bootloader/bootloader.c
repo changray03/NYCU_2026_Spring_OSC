@@ -35,12 +35,6 @@ void uart_bootloader(unsigned long hartid, unsigned long fdt) {
     char* kernel_ptr = (char*)KERNEL_BASE;
     for (unsigned int i = 0; i < kernel_size; i++) {
         kernel_ptr[i] = uart_getc_raw();
-
-        // --- 握手核心邏輯 ---
-        // 每收滿 512 Bytes，或是收到了最後一個 Byte
-        if (((i + 1) % CHUNK_SIZE == 0)) {
-            uart_putc(ASCII_ACK); 
-        }
     }
     uart_getc();
     uart_puts("Kernel loaded. Jumping...\n");
