@@ -11,3 +11,8 @@
 * 動態載入 kernel image by UART Bootloader
 * Device tree parsing
 * initrd.cpio parsing
+
+## Lab3
+* Memory management using Buddy System and Slab Allcoator
+* 處理 Reserved Memory 避免修改到硬體資料
+* 開發 Startup Allocator 以處理 buddy system 的 metadata 的空間分配
