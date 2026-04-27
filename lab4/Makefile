@@ -1,0 +1,37 @@
+.PHONY: all test run clean
+RISCV_GNU ?= riscv64-unknown-elf
+CC = $(RISCV_GNU)-gcc
+LD = $(RISCV_GNU)-ld
+OBJCOPY = $(RISCV_GNU)-objcopy
+CFLAGS = -mcmodel=medany -ffreestanding -nostdlib -g -Wall -Iinc
+QEMU ?= qemu-system-riscv64
+TARGET = kernel
+
+BUILD_DIR = build
+SRCS_C = $(wildcard *.c) $(wildcard src/*.c)
+SRCS_S = $(wildcard *.S)
+OBJS = $(patsubst %.c, build/%.o, $(SRCS_C))
+OBJS += $(patsubst %.S, build/%.o, $(SRCS_S))
+
+all: clean $(OBJS)
+	$(LD) -T link.ld --defsym KERNEL_START=0x20000000 -o $(TARGET).elf $(OBJS)
+	$(OBJCOPY) -O binary $(TARGET).elf $(TARGET).bin
+
+test: CFLAGS += -DDEBUG
+test: clean $(OBJS)
+	$(LD) -T link.ld --defsym KERNEL_START=0x80200000 -o $(TARGET).elf $(OBJS)
+	$(OBJCOPY) -O binary $(TARGET).elf $(TARGET).bin
+
+run: test
+	$(QEMU) -machine virt -m 256M -kernel $(TARGET).bin -display none -serial stdio -initrd initramfs.cpio
+
+$(BUILD_DIR)/%.o: %.c
+	@mkdir -p $(@D) 
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/%.o: %.S
+	@mkdir -p $(@D) #
+	$(CC) $(CFLAGS) -c $< -o $@
+
+clean:
+	rm -rf $(BUILD_DIR) $(TARGET).elf $(TARGET).bin
