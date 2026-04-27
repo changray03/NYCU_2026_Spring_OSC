@@ -16,3 +16,8 @@
 * Memory management using Buddy System and Slab Allcoator
 * 處理 Reserved Memory 避免修改到硬體資料
 * 開發 Startup Allocator 以處理 buddy system 的 metadata 的空間分配
+
+## Lab4
+* Exception and interrupt handling
+* PLIC implementation
+* 實作 preemptive interrupt handling
